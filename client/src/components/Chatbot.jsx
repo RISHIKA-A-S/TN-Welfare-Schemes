@@ -21,7 +21,7 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8080/get', {
+      const res = await fetch('http://localhost:5000/get', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ msg }),
@@ -29,6 +29,7 @@ const Chatbot = () => {
 
       const data = await res.json();
       const botText = data?.response?.trim();
+
       if (botText) {
         const botMsg = { sender: 'bot', text: botText, time: getTime() };
         setMessages((prev) => [...prev, botMsg]);
@@ -78,12 +79,10 @@ const Chatbot = () => {
                     />
                   </div>
                 )}
-                <div className={m.sender === 'user' ? 'msg_cotainer_send' : 'msg_cotainer'}>
-                  {m.text}
-                  <span className={m.sender === 'user' ? 'msg_time_send' : 'msg_time'}>
-                    {m.time}
-                  </span>
-                </div>
+                <div
+                  className={m.sender === 'user' ? 'msg_cotainer_send' : 'msg_cotainer'}
+                  dangerouslySetInnerHTML={{ __html: m.text }} // Renders clickable links
+                />
                 {m.sender === 'user' && (
                   <div className="img_cont_msg">
                     <img

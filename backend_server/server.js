@@ -1,134 +1,81 @@
-// server.js
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const fetch = require('node-fetch'); // for AI calls or scraping
-const cheerio = require('cheerio');   // for scraping HTML
-const cron = require('node-cron');
-
-const authRoutes = require('./routes/authRoutes');
-const bookmarkRoutes = require('./routes/bookmarkRoutes');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 
 // -----------------------------
-// ✅ Middleware
+// Middleware
 // -----------------------------
 const corsOptions = {
-  origin: 'http://localhost:5173', // React frontend
+  origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/bookmarks', bookmarkRoutes);
-
 // -----------------------------
-// 🔹 Scraping Your Own Website
+// Load schemes.json
 // -----------------------------
 let cachedSchemes = [];
+const schemesPath = path.join(__dirname, '../client/public/schemes.json');
 
-async function scrapeSchemes() {
-  try {
-    console.log("🔄 Scraping schemes from your website...");
-    const res = await fetch("http://localhost:5173"); // Replace with deployed URL if needed
-    const html = await res.text();
-    const $ = cheerio.load(html);
-
-    let schemes = [];
-    $(".scheme-card").each((i, el) => {  // Adjust selector to match your website HTML
-      const title = $(el).find(".scheme-title").text().trim();
-      const desc = $(el).find(".scheme-desc").text().trim();
-      const link = $(el).find("a").attr("href");
-      if (title) {
-        schemes.push({
-          title,
-          desc,
-          link: link ? `http://localhost:5173${link}` : null
-        });
-      }
-    });
-
-    cachedSchemes = schemes;
-    console.log(`✅ Scraped ${schemes.length} schemes from your website`);
-  } catch (err) {
-    console.error("❌ Scraping failed:", err);
-  }
+try {
+  const data = fs.readFileSync(schemesPath, 'utf-8');
+  cachedSchemes = JSON.parse(data);
+  console.log(`✅ Loaded ${cachedSchemes.length} schemes from schemes.json`);
+} catch (err) {
+  console.error('❌ Failed to load schemes.json:', err.message);
 }
 
-// Scrape once at startup
-scrapeSchemes();
-
-// Auto-refresh daily at 6 AM
-cron.schedule("0 6 * * *", () => {
-  scrapeSchemes();
-});
-
 // -----------------------------
-// 🔹 Chatbot AI Route
+// Chatbot Route
 // -----------------------------
-app.post('/get', async (req, res) => {
+app.post('/get', (req, res) => {
   try {
     const { msg } = req.body;
     if (!msg) return res.status(400).json({ response: "⚠️ Please enter a query." });
 
-    // Search cached schemes first
-    const results = cachedSchemes.filter(s =>
-      s.title.toLowerCase().includes(msg.toLowerCase()) ||
-      s.desc.toLowerCase().includes(msg.toLowerCase())
-    );
+    const query = msg.toLowerCase();
 
-    let context = results.length
-      ? results.map(s => `- ${s.title}: ${s.desc} (More: ${s.link})`).join("\n")
-      : "No matching schemes found.";
-
-    // Call Ollama Mistral AI (optional)
-    const ollamaRes = await fetch("http://localhost:11434/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "mistral",
-        prompt: `The user asked: "${msg}". Use the following schemes data to answer clearly in the same language as the user:\n${context}`
-      }),
+    const results = cachedSchemes.filter((s) => {
+      const title = s.title?.en || '';
+      const benefits = s.benefits?.en || '';
+      return title.toLowerCase().includes(query) || benefits.toLowerCase().includes(query);
     });
 
-    const data = await ollamaRes.json();
-    res.json({ response: data.response || context });
+    const responseText = results.length
+      ? results
+          .map(
+            (s) =>
+              `- ${s.title.en}: ${s.benefits.en}. <a href="${s.link}" target="_blank" rel="noopener noreferrer">Link</a>`
+          )
+          .join('<br>')
+      : 'No matching schemes found.';
+
+    res.json({ response: responseText });
   } catch (err) {
-    console.error("❌ Chatbot error:", err);
-    res.status(500).json({ response: "⚠️ Something went wrong." });
+    console.error('❌ Chatbot error:', err);
+    res.status(500).json({ response: "⚠️ Something went wrong. Please try again later." });
   }
 });
 
 // -----------------------------
-// 🔹 Direct Schemes Search API
-// -----------------------------
-app.get("/api/schemes/search", (req, res) => {
-  const { q } = req.query;
-  if (!q) return res.json([]);
-  const results = cachedSchemes.filter(s =>
-    s.title.toLowerCase().includes(q.toLowerCase()) ||
-    s.desc.toLowerCase().includes(q.toLowerCase())
-  );
-  res.json(results);
-});
-
-// -----------------------------
-// ✅ MongoDB + Server Start
+// MongoDB + Server Start
 // -----------------------------
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
-mongoose.connect(MONGO_URI, {
-  tls: true,
-  tlsInsecure: false,
-})
-.then(() => {
-  console.log('✅ MongoDB connected');
-  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-})
-.catch(err => console.error('❌ DB Connection Failed:', err));
+mongoose
+  .connect(MONGO_URI, { tls: true, tlsInsecure: false })
+  .then(() => {
+    console.log('✅ MongoDB connected');
+    app.listen(PORT, () =>
+      console.log(`🚀 Server running on port ${PORT} Welfare Schemes Chatbot`)
+    );
+  })
+  .catch((err) => console.error('❌ DB Connection Failed:', err));
