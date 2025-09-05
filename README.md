@@ -2,6 +2,8 @@
 
 A web platform that lists Tamil Nadu Government Welfare Schemes with an integrated chatbot for easy navigation and query resolution. The website helps citizens discover government schemes, check eligibility, and get application guidance.
 
+
+
 🚀 Features
 
 📋 Scheme Directory – Browse all welfare schemes in one place.
@@ -15,6 +17,8 @@ A web platform that lists Tamil Nadu Government Welfare Schemes with an integrat
 ✅ Eligibility Checker (Optional) – Answer a few questions to see schemes you qualify for.
 
 🔗 Application Guidance – Links to official portals and required documents.
+
+
 
 🛠️ Tech Stack
 Frontend
