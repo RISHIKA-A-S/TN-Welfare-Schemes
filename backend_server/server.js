@@ -33,7 +33,24 @@ try {
 }
 
 // -----------------------------
-// Chatbot Route
+// Automatic Welcome Message Route
+// -----------------------------
+app.get('/welcome', (req, res) => {
+  res.json({
+    response: `
+    👋 Welcome to the Welfare Schemes Advisor!<br><br>
+    You can ask about:<br>
+    • Scholarships for students<br>
+    • Women welfare programs<br>
+    • Loans for startups or youth<br>
+    • Insurance and health schemes<br><br>
+    Just type a topic or keyword — I’ll find the matching government schemes for you. 🚀
+    `
+  });
+});
+
+// -----------------------------
+// Chatbot Search Route
 // -----------------------------
 app.post('/get', (req, res) => {
   try {
@@ -49,15 +66,14 @@ app.post('/get', (req, res) => {
     });
 
     const responseText = results.length
-      ? results
-          .map(
-            (s) =>
-              `- ${s.title.en}: ${s.benefits.en}. <a href="${s.link}" target="_blank" rel="noopener noreferrer">Link</a>`
-          )
-          .join('<br>')
-      : 'No matching schemes found.';
+      ? results.map(
+          (s) =>
+            `➡️ <strong>${s.title.en}</strong>: ${s.benefits.en}. <a href="${s.link}" target="_blank" rel="noopener noreferrer">🔗 Open</a>`
+        ).join('<br><br>')
+      : "❌ No matching schemes found. Try a different keyword.";
 
     res.json({ response: responseText });
+
   } catch (err) {
     console.error('❌ Chatbot error:', err);
     res.status(500).json({ response: "⚠️ Something went wrong. Please try again later." });
@@ -75,7 +91,7 @@ mongoose
   .then(() => {
     console.log('✅ MongoDB connected');
     app.listen(PORT, () =>
-      console.log(`🚀 Server running on port ${PORT} Welfare Schemes Chatbot`)
+      console.log(`🚀 Server running on port ${PORT} | Welfare Schemes Chatbot Ready!`)
     );
   })
   .catch((err) => console.error('❌ DB Connection Failed:', err));
