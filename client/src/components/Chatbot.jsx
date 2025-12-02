@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './chatbot.css';
 
 const Chatbot = () => {
@@ -11,6 +11,31 @@ const Chatbot = () => {
     return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
 
+  // -----------------------------
+  // Load welcome message on first load
+  // -----------------------------
+  useEffect(() => {
+    const fetchWelcomeMessage = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/welcome');
+        const data = await res.json();
+        
+        if (data?.response) {
+          setMessages([
+            { sender: 'bot', text: data.response, time: getTime() }
+          ]);
+        }
+      } catch (err) {
+        console.error("Error loading welcome message:", err);
+      }
+    };
+
+    fetchWelcomeMessage();
+  }, []);
+
+  // -----------------------------
+  // Handle user input
+  // -----------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!msg.trim()) return;
@@ -46,6 +71,8 @@ const Chatbot = () => {
   return (
     <div className="chatbot-wrapper">
       <div className="card">
+        
+        {/* Header */}
         <div className="card-header msg_head">
           <div className="d-flex bd-highlight">
             <div className="img_cont">
@@ -62,6 +89,7 @@ const Chatbot = () => {
           </div>
         </div>
 
+        {/* Messages Body */}
         <div className="card-body msg_card_body" id="messageFormeight">
           {messages
             .filter((m) => m.text && m.text.trim() !== '')
@@ -81,7 +109,7 @@ const Chatbot = () => {
                 )}
                 <div
                   className={m.sender === 'user' ? 'msg_cotainer_send' : 'msg_cotainer'}
-                  dangerouslySetInnerHTML={{ __html: m.text }} // Renders clickable links
+                  dangerouslySetInnerHTML={{ __html: m.text }}
                 />
                 {m.sender === 'user' && (
                   <div className="img_cont_msg">
@@ -94,6 +122,7 @@ const Chatbot = () => {
                 )}
               </div>
             ))}
+
           {loading && (
             <div id="loading" className="text-center my-2">
               <img
@@ -105,6 +134,7 @@ const Chatbot = () => {
           )}
         </div>
 
+        {/* Input Section */}
         <div className="card-footer">
           <form className="chat-input-row" onSubmit={handleSubmit}>
             <input
