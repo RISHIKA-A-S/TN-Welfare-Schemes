@@ -4,6 +4,9 @@ A web platform that lists Tamil Nadu Government Welfare Schemes with an integrat
 
 https://tn-welfare-schemes-git-main-rishika-a-s-projects.vercel.app
 
+
+
+
 🚀 Features
 
 📋 Scheme Directory – Browse all welfare schemes in one place.
@@ -31,6 +34,8 @@ Rule-based (Dialogflow / Rasa) or AI-powered assistant
 Supports Tamil & English queries
 
 
+
+
 📂 Project Structure
 
 welfare-schemes-tn/
@@ -42,6 +47,8 @@ welfare-schemes-tn/
 │── README.md          # Project documentation
 
 
+
+   
 ⚙️ Installation & Setup
 
 1️⃣ Clone the repository
@@ -68,6 +75,8 @@ Official Tamil Nadu Government Portal: https://www.tn.gov.in
 
 📸 Screenshots
 
+
+
 🎯 Future Enhancements
 
  Advanced eligibility checker with user inputs.
@@ -79,9 +88,12 @@ Official Tamil Nadu Government Portal: https://www.tn.gov.in
  More languages (Hindi, Telugu, etc.).
 
 
+
 🤝 Contributing
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+
 
 📜 License
 
