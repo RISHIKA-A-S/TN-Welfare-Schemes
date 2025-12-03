@@ -5,6 +5,7 @@ A web platform that lists Tamil Nadu Government Welfare Schemes with an integrat
 <!-- Clone Count -->
 [![Clones](https://raw.githubusercontent.com/RISHIKA-A-S/TN-Welfare-Schemes/main/clone-badge.md)](https://github.com/RISHIKA-A-S/TN-Welfare-Schemes)
 
+![Views](https://img.shields.io/badge/Views-1234-brightgreen)
 
 🚀 Features
 
