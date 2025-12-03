@@ -7,6 +7,9 @@ A web platform that lists Tamil Nadu Government Welfare Schemes with an integrat
 
 ![Views](https://img.shields.io/badge/Views-1234-brightgreen)
 
+![Unique Visitors](https://img.shields.io/badge/Unique_Visitors-90-purple)
+
+
 🚀 Features
 
 📋 Scheme Directory – Browse all welfare schemes in one place.
