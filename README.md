@@ -2,7 +2,9 @@
 
 A web platform that lists Tamil Nadu Government Welfare Schemes with an integrated chatbot for easy navigation and query resolution. The website helps citizens discover government schemes, check eligibility, and get application guidance.
 
-https://api.github.com/repos/RISHIKA-A-S/TN-Welfare-Schemes/traffic/clones
+<!-- Clone Count -->
+[![Clones](https://raw.githubusercontent.com/RISHIKA-A-S/TN-Welfare-Schemes/main/clone-badge.md)](https://github.com/RISHIKA-A-S/TN-Welfare-Schemes)
+
 
 🚀 Features
 
